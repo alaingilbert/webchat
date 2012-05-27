@@ -4,12 +4,46 @@
 
 <input type="button" value="echo" id="send" />
 <video id="webcam" width="320" height="240" autoplay></video>
+<canvas id="canvas" width="320" height="240"></canvas>
+
+<div id="log"></div>
 
 <script>
 var $ = function (id) { return document.getElementById(id); };
 
-var video = $('webcam');
+function dataURItoBlob(dataURI) {
+   // convert base64 to raw binary data held in a string
+   // doesn't handle URLEncoded DataURIs
+   var byteString = atob(dataURI.split(',')[1]);
 
+   // separate out the mime component
+   var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+   // write the bytes of the string to an ArrayBuffer
+   var ab = new ArrayBuffer(byteString.length);
+   var ia = new Uint8Array(ab);
+   for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+   }
+
+   // write the ArrayBuffer to a blob, and you're done
+   var bb = new WebKitBlobBuilder();
+   bb.append(ab);
+   return bb.getBlob(mimeString);
+}
+
+
+// Socket
+var ws = new WebSocket("ws://localhost:8888/websocket/");
+ws.onopen = function() {};
+ws.onmessage = function (evt) {
+   $('log').appendChild(document.createTextNode(evt.data));
+   $('log').appendChild(document.createElement('br'));
+};
+
+
+// Video
+var video = $('webcam');
 navigator.webkitGetUserMedia("video", function(stream) {
       video.src = webkitURL.createObjectURL(stream);
    },
@@ -18,12 +52,19 @@ navigator.webkitGetUserMedia("video", function(stream) {
    }
 );
 
-var ws = new WebSocket("ws://localhost:8888/websocket/");
-ws.onopen = function() {};
-ws.onmessage = function (evt) {
-   alert(evt.data);
-};
 
+// Canvas
+var canvas = $('canvas');
+var ctx = canvas.getContext('2d');
+var timer = setInterval(function () {
+   ctx.drawImage(video, 0, 0, 320, 240);
+   var data = canvas.toDataURL('image/jpeg', 1.0);
+   var newblob = dataURItoBlob(data);
+   ws.send(newblob);
+}, 250);
+
+
+// Button
 var btn = $('send');
 btn.addEventListener('click', function () { ws.send('echo'); }, false);
 </script>

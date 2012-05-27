@@ -11,7 +11,7 @@ class EchoWebSocket(websocket.WebSocketHandler):
       print "WebSocket opened"
 
    def on_message(self, message):
-      self.write_message(u"Server: " + message)
+      self.write_message(u"Server: Frame received")
 
    def on_close(self):
       print "WebSocket closed"
@@ -22,6 +22,7 @@ loader = template.Loader("%s" % PROJECT_ROOT)
 # Http handler
 class MainHandler(tornado.web.RequestHandler):
    def get(self):
+      loader.reset()
       self.write(loader.load("index.html").generate(myvalue="XXX"))
 
 
