@@ -1,7 +1,11 @@
 import tornado.ioloop
 import tornado.web
-from tornado import websocket
+import os
+from tornado import websocket, template
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
+
+# Websocket handler
 class EchoWebSocket(websocket.WebSocketHandler):
    def open(self):
       print "WebSocket opened"
@@ -12,9 +16,20 @@ class EchoWebSocket(websocket.WebSocketHandler):
    def on_close(self):
       print "WebSocket closed"
 
+
+loader = template.Loader("%s" % PROJECT_ROOT)
+
+# Http handler
+class MainHandler(tornado.web.RequestHandler):
+   def get(self):
+      self.write(loader.load("index.html").generate(myvalue="XXX"))
+
+
 application = tornado.web.Application([
-    (r"/", EchoWebSocket),
+    (r'/websocket/', EchoWebSocket),
+    (r'/', MainHandler),
 ])
+
 
 if __name__ == "__main__":
     application.listen(8888)
