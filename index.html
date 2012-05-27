@@ -9,6 +9,7 @@
 <input type="button" value="echo" id="send" />
 <video id="webcam" width="320" height="240" autoplay></video>
 <canvas id="canvas" width="320" height="240"></canvas>
+<img id="target" alt="" />
 
 <div id="log"></div>
 
@@ -41,8 +42,14 @@ function dataURItoBlob(dataURI) {
 var ws = new WebSocket("ws://localhost:8888/websocket/");
 ws.onopen = function() {};
 ws.onmessage = function (evt) {
-   $('log').appendChild(document.createTextNode(evt.data));
-   $('log').appendChild(document.createElement('br'));
+   //$('log').appendChild(document.createTextNode(evt.data));
+   //$('log').appendChild(document.createElement('br'));
+   var url = window.webkitURL.createObjectURL(evt.data);
+   var img = $('target');
+   img.onload = function () {
+      window.webkitURL.revokeObjectURL(url);
+   };
+   img.src = url;
 };
 
 

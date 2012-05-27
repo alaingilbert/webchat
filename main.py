@@ -11,7 +11,7 @@ class EchoWebSocket(websocket.WebSocketHandler):
       print "WebSocket opened"
 
    def on_message(self, message):
-      self.write_message(u"Server: Frame received")
+      self.write_message(message, True)
 
    def on_close(self):
       print "WebSocket closed"
