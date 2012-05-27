@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<body>
+
+<input type="button" value="echo" id="send" />
+
+<script>
+var ws = new WebSocket("ws://localhost:8888/");
+ws.onopen = function() {};
+ws.onmessage = function (evt) {
+   alert(evt.data);
+};
+
+var btn = document.getElementById('send');
+btn.addEventListener('click', function () { ws.send('echo'); }, false);
+</script>
+
+
+</body>
+</html>
