@@ -29,6 +29,7 @@ class MainHandler(tornado.web.RequestHandler):
 application = tornado.web.Application([
     (r'/websocket/', EchoWebSocket),
     (r'/', MainHandler),
+    (r'/css/(.*)', tornado.web.StaticFileHandler, {'path': '%s/css/' % PROJECT_ROOT}),
 ])
 
 
