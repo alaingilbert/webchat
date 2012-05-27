@@ -9,6 +9,8 @@ python main.py
 
 Browse to `http://127.0.0.1:8888/`
 
+Change `HOST` variable value in `index.html`
+
 
 ### Html5 webcam streaming
 

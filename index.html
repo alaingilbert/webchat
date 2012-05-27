@@ -8,12 +8,16 @@
 
 <input type="button" value="echo" id="send" />
 <video id="webcam" width="320" height="240" autoplay></video>
-<canvas id="canvas" width="320" height="240"></canvas>
+<canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 <img id="target" alt="" />
 
 <div id="log"></div>
 
 <script>
+
+var HOST = '127.0.0.1'
+  , PORT = 1337;
+
 var $ = function (id) { return document.getElementById(id); };
 
 function dataURItoBlob(dataURI) {
@@ -39,8 +43,10 @@ function dataURItoBlob(dataURI) {
 
 
 // Socket
-var ws = new WebSocket("ws://localhost:8888/websocket/");
-ws.onopen = function() {};
+var connected = false;
+var ws = new WebSocket('ws://' + HOST + ':' + PORT + '/websocket/');
+ws.onopen = function() { connected = true; console.log('loggued'); };
+ws.onerror = function (err) { console.log(err); };
 ws.onmessage = function (evt) {
    //$('log').appendChild(document.createTextNode(evt.data));
    //$('log').appendChild(document.createElement('br'));
@@ -71,8 +77,10 @@ var timer = setInterval(function () {
    ctx.drawImage(video, 0, 0, 320, 240);
    var data = canvas.toDataURL('image/jpeg', 1.0);
    var newblob = dataURItoBlob(data);
-   ws.send(newblob);
-}, 250);
+   if (connected) {
+      ws.send(newblob);
+   }
+}, 2000);
 
 
 // Button
