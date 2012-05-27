@@ -1,8 +1,8 @@
 import tornado.ioloop
 import tornado.web
 import os
-from tornado import websocket, template
-import json
+from tornado import websocket, template, httpserver
+import json, tornado
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -19,7 +19,7 @@ class EchoWebSocket(websocket.WebSocketHandler):
       global sockets
       for s in sockets:
          if not s == self:
-            self.write_message(message, True)
+            s.write_message(message, True)
 
    def on_close(self):
       print 'lost one'
@@ -44,5 +44,6 @@ application = tornado.web.Application([
 
 
 if __name__ == "__main__":
-    application.listen(1337)
-    tornado.ioloop.IOLoop.instance().start()
+   http_server = tornado.httpserver.HTTPServer(application)
+   http_server.listen(1337)
+   tornado.ioloop.IOLoop.instance().start()
