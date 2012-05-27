@@ -3,15 +3,28 @@
 <body>
 
 <input type="button" value="echo" id="send" />
+<video id="webcam" width="320" height="240" autoplay></video>
 
 <script>
+var $ = function (id) { return document.getElementById(id); };
+
+var video = $('webcam');
+
+navigator.webkitGetUserMedia("video", function(stream) {
+      video.src = webkitURL.createObjectURL(stream);
+   },
+   function(err) {
+      console.log("Unable to get video stream!")
+   }
+);
+
 var ws = new WebSocket("ws://localhost:8888/websocket/");
 ws.onopen = function() {};
 ws.onmessage = function (evt) {
    alert(evt.data);
 };
 
-var btn = document.getElementById('send');
+var btn = $('send');
 btn.addEventListener('click', function () { ws.send('echo'); }, false);
 </script>
 
